@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="theme-color" content="#333" />
+	<title>Tipi Time | Add Entry</title>
+	<meta name="description" content="TimeTracking List" />
+	<link rel="shortcut icon" href="assets/img/favicon.png?v=3" />
+	<link rel="stylesheet" href="assets/css/fontgoogleapis.css" />
+	<link rel="stylesheet" href="assets/css/preload.min.css" />
+	<link rel="stylesheet" href="assets/css/plugins.min.css" />
+	<link rel="stylesheet" href="assets/css/style.light-blue-500.min.css" />
+	<!--[if lt IE 9]>
+        <script src="assets/js/html5shiv.min.js"></script>
+        <script src="assets/js/respond.min.js"></script>
+    <![endif]-->
+</h:head>
+<h:body>
+	<div id="ms-preload" class="ms-preload">
+		<div id="status">
+			<div class="spinner">
+				<div class="dot1"></div>
+				<div class="dot2"></div>
+			</div>
+		</div>
+	</div>
+	<div class="ms-site-container">
+		<!-- Modal -->
+		<ui:include src="components/header.xhtml" />
+		<ui:include src="components/top-menu.xhtml" />
+		<div class="material-background"></div>
+		<div class="container container-full">
+			<div class="card animated slideInUp animation-delay-8 mb-6">
+				<div class="card-block-big">
+					<section class="ms-component-section">
+					<h2 class="section-title no-margin-top">Add Entry</h2>
+					<h:form id="addEntry">
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="card card-default">
+									<div class="card-header">
+										<h3 class="card-title">Month / Year</h3>
+									</div>
+									<div class="card-block">
+										<p style="font-size: x-large; text-align: center">August
+											2018</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="card card-default">
+									<div class="card-header">
+										<h3 class="card-title">Staff Name</h3>
+									</div>
+									<div class="card-block">
+										<p style="font-size: x-large; text-align: center">Staff
+											Name</p>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<ui:repeat var="e" value="#{timetrackingBean.entryRenderers}"
+							varStatus="status">
+							<div class="form-group row is-empty">
+
+								<h:outputLabel value="Date :"
+									styleClass="col-lg-2 control-label" />
+
+								<div class="col-lg-10">
+									<h:selectOneMenu value="#{e.date}"
+										styleClass="btn dropdown-toggle btn-default">
+										<f:selectItems value="#{timeTrackingBean.timeTrackingDates}"
+											var="d" itemLabel="#{d}" itemValue="#{d}"></f:selectItems>
+									</h:selectOneMenu>
+								</div>
+							</div>
+							<div class="form-group row is-empty">
+
+								<h:outputLabel value="Project :"
+									styleClass="col-lg-2 control-label" />
+
+								<div class="col-lg-10">
+									<h:selectOneMenu value="#{e.project}"
+										styleClass="btn dropdown-toggle btn-default">
+										<f:selectItem itemLabel="Select Project" itemValue="" />
+										<f:selectItems value="#{timeTrackingBean.projects}" var="p"
+											itemLabel="#{p.nameProject}" itemValue="#{p.nameProject}"></f:selectItems>
+										<f:ajax event="change" render="addEntry:category"
+											listener="#{timetrackingBean.projectSelectionChangeListener}"></f:ajax>
+										<f:attribute name="idProject" value="#{p.idProject}"></f:attribute>
+									</h:selectOneMenu>
+								</div>
+							</div>
+							<div class="form-group row is-empty">
+
+								<h:outputLabel value="Category :"
+									styleClass="col-lg-2 control-label" />
+
+								<div class="col-lg-10">
+									<h:selectOneMenu id="category" value="#{e.category}"
+										styleClass="btn dropdown-toggle btn-default"
+										rendered="#{timetrackingBean.categories != null and timetrackingBean.categories.size() != 0}">
+										<f:selectItems value="#{timetrackingBean.categories}"
+											var="sc" itemLabel="#{sc}" itemValue="#{sc}"></f:selectItems>
+									</h:selectOneMenu>
+								</div>
+							</div>
+							<div class="form-group row is-empty">
+
+								<h:outputLabel value="Number of Hours :"
+									styleClass="col-lg-2 control-label" />
+
+								<div class="col-lg-10">
+									<h:inputText id="hours" value="#{e.entry}"
+										styleClass="form-control" a:placeholder="Number of Hours">
+										<f:validator validatorId="EntryValidator"></f:validator>
+									</h:inputText>
+									<h:message for="hours" style="color : red;" />
+								</div>
+							</div>
+							<h:commandButton value="Remove Entry"
+								styleClass="btn btn-raised btn-danger"
+								rendered="#{status.index != 0}">
+								<f:ajax listener="#{timetrackingBean.removeEntry}" render="addEntry"></f:ajax>
+								<f:attribute name="index" value="#{status.index}"></f:attribute>
+							</h:commandButton>
+							<hr></hr>
+
+						</ui:repeat>
+						<h:commandButton value="Add New Entry"
+							styleClass="btn btn-raised btn-default">
+							<f:ajax listener="#{timetrackingBean.addNewEntry}" render="addEntry"></f:ajax>
+						</h:commandButton>
+						<br />
+						<h:commandButton value="Save Entries"
+							styleClass="btn btn-raised btn-success" />
+
+					</h:form> </section>
+
+				</div>
+			</div>
+		</div>
+		<ui:include src="components/left-menu.xhtml" />
+		<ui:include src="components/ms-container.xhtml" />
+		<ui:include src="components/footer.xhtml" />
+		<div class="btn-back-top">
+			<a href="#" data-scroll="data-scroll" id="back-top"
+				class="btn-circle btn-circle-primary btn-circle-sm btn-circle-raised ">
+				<i class="zmdi zmdi-long-arrow-up"></i>
+			</a>
+		</div>
+	</div>
+	<script src="assets/js/plugins.min.js"></script>
+	<script src="assets/js/app.min.js"></script>
+</h:body>
+</html>
